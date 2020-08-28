@@ -196,30 +196,126 @@ function flushCallbacks () {
  * 所以我们在this.msg = hello 并不会立即更新dom。
  */
 
-/** 
- * vue宏微任务的使用场景
- * https://zhuanlan.zhihu.com/p/72494316
+/**
+ * 总结：
  * 
- * Vue 一般情况下使用的是微任务
- * 在绑定DOM 事件的时候，会使用宏任务
- * 事件回调执行过程中，在JS 主线程为空之后，异步代码执行之前，所有通过 nextTick 注册的异步代码都是用宏任务。
- */ 
-Vue.nextTick =function (cb, ctx) {
-    callbacks.push(function() {
-        cb && cb.call(ctx);
-
-    });    
-
-    if (!pending) {
-        pending = true;        
-        if (useMacroTask) {
-            macroTimerFunc();
-        } else {
-            microTimerFunc();
-        }
-    }
-}
-/** 
- * 通过设置 useMacroTask 来控制注册宏任务
+ * vue为了保证性能，会把dom修改添加到异步任务，所有同步代码执行完成后再统一修改dom
+ * 一次事件循环中的多次数据修改只会触发一次watcher.run()
+ * 也就是通过nextTick，nextTick会优先使用microTask创建异步任务
+ * vue项目中如果需要获取修改后的dom信息，需要通过nextTick在dom更新任务之后创建一个异步任务
+ * 
+ * 如官网所说，nextTick会在下次 DOM 更新循环结束之后执行延迟回调。
  */
 
+
+/**
+ * Vue nextTick 机制
+ * https://juejin.im/post/6844903599655370765
+ */
+// 效果：实际效果中，只会输出一次：3
+export default {
+    data () {
+      return {
+        msg: 0
+      }
+    },
+    mounted () {
+      this.msg = 1
+      this.msg = 2
+      this.msg = 3
+    },
+    watch: {
+      msg () {
+        console.log(this.msg)
+      }
+    }
+}
+
+/** 
+ * queueWatcher
+ * 
+ * 我们定义watch监听msg，实际上会被Vue这样调用vm.$watch(keyOrFn, handler, options)。$watch是我们初始化的时候，为vm绑定的一个函数，用于创建Watcher对象
+ */
+
+/** 
+ * Vue通过callback数组来模拟事件队列，事件队里的事件，通过nextTickHandler方法来执行调用，而何事进行执行，是由timerFunc来决定的
+ */ 
+export const nextTick = (function () {
+    const callbacks = []
+    let pending = false
+    let timerFunc
+  
+    function nextTickHandler () {
+      pending = false
+      const copies = callbacks.slice(0)
+      callbacks.length = 0
+      for (let i = 0; i < copies.length; i++) {
+        copies[i]()
+      }
+    }
+  
+    if (typeof setImmediate !== 'undefined' && isNative(setImmediate)) {
+      timerFunc = () => {
+        setImmediate(nextTickHandler)
+      }
+    } else if (typeof MessageChannel !== 'undefined' && (
+      isNative(MessageChannel) ||
+      // PhantomJS
+      MessageChannel.toString() === '[object MessageChannelConstructor]'
+    )) {
+      const channel = new MessageChannel()
+      const port = channel.port2
+      channel.port1.onmessage = nextTickHandler
+      timerFunc = () => {
+        port.postMessage(1)
+      }
+    } else
+    /* istanbul ignore next */
+    if (typeof Promise !== 'undefined' && isNative(Promise)) {
+      // use microtask in non-DOM environments, e.g. Weex
+      const p = Promise.resolve()
+      timerFunc = () => {
+        p.then(nextTickHandler)
+      }
+    } else {
+      // fallback to setTimeout
+      timerFunc = () => {
+        setTimeout(nextTickHandler, 0)
+      }
+    }
+  
+    return function queueNextTick (cb?: Function, ctx?: Object) {
+      let _resolve
+      callbacks.push(() => {
+        if (cb) {
+          try {
+            cb.call(ctx)
+          } catch (e) {
+            handleError(e, ctx, 'nextTick')
+          }
+        } else if (_resolve) {
+          _resolve(ctx)
+        }
+      })
+      if (!pending) {
+        pending = true
+        timerFunc()
+      }
+      // $flow-disable-line
+      if (!cb && typeof Promise !== 'undefined') {
+        return new Promise((resolve, reject) => {
+          _resolve = resolve
+        })
+      }
+    }
+})()
+
+/** 
+ * setImmediate、MessageChannel VS setTimeout
+ * 
+ * 优先定义setImmediate、MessageChannel为什么要优先用他们创建macroTask而不是setTimeout？
+ * 
+ * HTML5中规定setTimeout的最小时间延迟是4ms，也就是说理想环境下异步回调最快也是4ms才能触发。
+ * Vue使用这么多函数来模拟异步任务，其目的只有一个，就是让回调异步且尽早调用。而MessageChannel 和 setImmediate 的延迟明显是小于setTimeout的。
+ * 
+ */
