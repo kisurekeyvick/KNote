@@ -37,5 +37,18 @@
 ├── $nextTick
 │   ├── $nextTick.ts    (1) nextTick的使用
 │                       (2) nextTick的原理
+├── mixin           
+│   ├── mixin.ts    (1) 关于mixin的一些理解
+│
+├── vuex-class
+│   ├── vuex-class.ts   (1) namespace的作用，使用方法
+│                       (2) ts写法，关于定义vuex的初始化state，action，getters，mutations
+│
+├── vue-property-decorator          vue的ts写法
+│   ├── vue-property-decorator      (1) @Component的写法
+│                                   (2) @Props的写法
+│                                   (3) @watch的写法
+│                                   (4) @emit的写法
+│                                   (5) @Ref的写法
 │
 ```
