@@ -4,7 +4,20 @@
 如果它是虚妄的，为何我能看到它。如果它是真实的，为何我不能触及到。
 何为真实何为虚妄？再上层楼再上层楼。
 
+# baseJs
+```
+├── Object.getOwnPropertyDescriptors
+│   ├── Object.getOwnPropertyDescriptors.ts     getOwnPropertyDescriptors用于copy存在get，set属性的object
+│
+```
+
 # typescript
+```
+├──
+│
+```
+
+# electron
 ```
 ├──
 │
@@ -31,6 +44,18 @@
 
 # vue
 ```
+├── $set $delete
+│   ├── $set $delete.ts      $set $delete用于给动态的属性添加响应
+│                           (1) 对象和数组不会响应式更新的情况
+│                           (2) vue响应式原理
+│                           (3) vue无法检测属性的添加或者删除
+│                           (4) vue.set() 源码分析
+│                           (5) vm.$set()的流程描述
+│                           (6) vm.$delete源码分析
+│
+├── $on $emit $off
+│   ├── $on $emit $off.ts   $on $emit $off就是发布订阅模式
+│
 ├── introduce.ts    vue渐进式的框架，理解
 ├── data-method.ts  (1) vue初始化，具体做了什么
 │                   (2) 为什么data需要return一个对象
@@ -58,4 +83,10 @@
 │                                   (4) @emit的写法
 │                                   (5) @Ref的写法
 │
+```
+
+# vue
+```
+遗留问题： 
+    (1) $watch $set $delete/$watch $set $delete.ts 中出现的observeArray，它用于观察，观察里面做了操作需要分析理解一下
 ```
