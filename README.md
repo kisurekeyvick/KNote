@@ -44,6 +44,9 @@
 
 # vue
 ```
+├── object.defineProperty
+│   ├── object.defineProperty.ts    vue双向绑定
+│
 ├── $set $delete
 │   ├── $set $delete.ts      $set $delete用于给动态的属性添加响应
 │                           (1) 对象和数组不会响应式更新的情况
