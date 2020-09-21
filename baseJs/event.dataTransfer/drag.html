@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>DataTransfer.setData()/.getData()/.clearData()</title>
+    <style>
+        div {
+            margin: 0em;
+            padding: 2em;
+        }
+        #source {
+            color: blue;
+            border: 1px solid black;
+        }
+        #target {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <section>
+        <div>
+            <p id="source" ondragstart="dragstart_handler(event);" draggable="true">
+                Select this element, drag it to the Drop Zone and then release the selection to move the element.
+            </p>
+        </div>
+        <div id="target" ondrop="drop_handler(event);" ondragover="dragover_handler(event);">
+            Drop Zone
+        </div>
+    </section>
+    <!-- js -->
+    <script>
+        function dragstart_handler(ev) {
+            ev.currentTarget.style.border = "dashed";
+            ev.dataTransfer.setData("nicefish", ev.target.id);
+        }
+
+        function dragover_handler(ev) {
+            ev.preventDefault();
+        }
+
+        function drop_handler(ev) {
+            console.log("Drop");
+            ev.preventDefault();
+            var data = ev.dataTransfer.getData("nicefish");
+            ev.target.appendChild(document.getElementById(data));
+            ev.dataTransfer.clearData();
+        }
+    </script>
+</body>
+</html>
