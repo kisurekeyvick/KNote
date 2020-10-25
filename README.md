@@ -9,6 +9,9 @@
 ├── Object.getOwnPropertyDescriptors
 │   ├── Object.getOwnPropertyDescriptors.ts     getOwnPropertyDescriptors用于copy存在get，set属性的object
 │
+│── memoryleak
+│   ├── memoryleak.ts 内存泄漏以及如何辨别避免内存泄漏
+│
 ```
 
 # typescript
@@ -26,6 +29,12 @@
 # 前端脚手架
 ```
 ├── 
+│
+```
+# optimize
+```
+├── web-optimize
+│   ├── web-optimize.ts     web优化：(1)资源的压缩合并 (2)异步加载 (3)浏览器缓存策略 (4)使用CDN
 │
 ```
 
