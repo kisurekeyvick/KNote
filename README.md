@@ -12,6 +12,12 @@
 │── memoryleak
 │   ├── memoryleak.ts 内存泄漏以及如何辨别避免内存泄漏
 │
+│── handwritten-js-array-api
+│   ├── handwritten-js-array-api.ts 手写js数组api
+│
+│── design-patterns
+│   ├── design-patterns.ts  设计模式
+│
 ```
 
 # typescript
@@ -31,6 +37,7 @@
 ├── 
 │
 ```
+
 # optimize
 ```
 ├── web-optimize
