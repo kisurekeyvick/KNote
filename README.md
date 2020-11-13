@@ -22,7 +22,7 @@
 
 # typescript
 ```
-├──
+├── implements&extends.ts   关于implenets和extends的区别
 │
 ```
 

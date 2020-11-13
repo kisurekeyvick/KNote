@@ -150,7 +150,7 @@ bmw840_two.run();
 /**
  * - 抽象工厂
  * 
- * 
+ * 抽象工厂模式（Abstract Factory Pattern），提供一个创建一系列相关或相互依赖对象的接口，而无须指定它们具体的类。
  */
 abstract class BMWFactory_three {
   abstract produce730BMW(): BMW730;
@@ -174,5 +174,218 @@ const bmw840_three = bmwFactory.produce840BMW();
 
 bmw730_three.run();
 bmw840_three.run();
+
+
+/**
+ * 单例模式
+ * 
+ * 单例模式（Singleton Pattern）是一种常用的模式，有一些对象我们往往只需要一个，比如全局缓存、浏览器中的 window 对象等。
+ * 单例模式用于保证一个类仅有一个实例，并提供一个访问它的全局访问点。
+ */
+class Singleton {
+  // 定义私有的静态属性，来保存对象实例
+  private static singleton: Singleton;
+  private constructor() {}
+
+  // 提供一个静态的方法来获取对象实例
+  public static getInstance(): Singleton {
+    if (!Singleton.singleton) {
+      Singleton.singleton = new Singleton();
+    }
+
+    return Singleton.singleton;
+  }
+}
+
+// 使用示例
+let instance1 = Singleton.getInstance();
+let instance2 = Singleton.getInstance();
+console.log(instance1 === instance2); 
+
+/**
+ * 应用场景
+ * 
+ * - 需要频繁实例化然后销毁的对象
+ * - 创建对象时耗时过多或耗资源过多，但又经常用到的对象
+ * - 系统只需要一个实例对象，如系统要求提供一个唯一的序列号生成器或资源管理器，或者需要考虑资源消耗太大而只允许创建一个对象。
+ */
+
+
+/**
+ * 适配器模式
+ * 
+ * 因为 Logger 和 CloudLogger 这两个接口不匹配，所以我们引入了 CloudLoggerAdapter 适配器来解决兼容性问题。
+ * 
+ * 使用场景：
+ * (1) 以前开发的系统存在满足新系统功能需求的类，但其接口同新系统的接口不一致
+ * (2) 使用第三方提供的组件，但组件接口定义和自己要求的接口定义不同
+ */
+interface Logger {
+  info(message: string): Promise<void>;
+}
+
+interface CloudLogger {
+  sendToServer(message: string, type: string): Promise<void>;
+}
+
+class AliLogger implements CloudLogger {
+  public async sendToServer(message: string, type: string): Promise<void> {
+    console.info(message);
+    console.info('This Message was saved with AliLogger');
+  }
+}
+
+class CloudLoggerAdapter implements Logger {
+  protected cloudLogger: CloudLogger;
+
+  constructor (cloudLogger: CloudLogger) {
+    this.cloudLogger = cloudLogger;
+  }
+
+  public async info(message: string): Promise<void> {
+    await this.cloudLogger.sendToServer(message, 'info');
+  }
+}
+
+class NotificationService {
+  protected logger: Logger;
+  
+  constructor (logger: Logger) {    
+    this.logger = logger;
+  }
+
+  public async send(message: string): Promise<void> {
+    await this.logger.info(`Notification sended: ${message}`);
+  }
+}
+
+// 使用示例
+(async () => {
+  const aliLogger = new AliLogger();
+  const cloudLoggerAdapter = new CloudLoggerAdapter(aliLogger);
+  const notificationService = new NotificationService(cloudLoggerAdapter);
+  await notificationService.send('Hello semlinker, To Cloud');
+})();
+
+
+/**
+ * 观察者模式 & 发布订阅模式
+ * 
+ * 观察者模式，它定义了一种一对多的关系，让多个观察者对象同时监听某一个主题对象，
+ * 这个主题对象的状态发生变化时就会通知所有的观察者对象，使得它们能够自动更新自己。
+ */
+interface Observer {
+  notify: Function;
+}
+
+class ConcreteObserver implements Observer{
+  constructor(private name: string) {}
+
+  notify() {
+    console.log(`${this.name} has been notified.`);
+  }
+}
+
+class Subject { 
+  private observers: Observer[] = [];
+
+  public addObserver(observer: Observer): void {
+    console.log(observer, "is pushed!");
+    this.observers.push(observer);
+  }
+
+  public deleteObserver(observer: Observer): void {
+    console.log("remove", observer);
+    const n: number = this.observers.indexOf(observer);
+    n != -1 && this.observers.splice(n, 1);
+  }
+
+  public notifyObservers(): void {
+    console.log("notify all the observers", this.observers);
+    this.observers.forEach(observer => observer.notify());
+  }
+}
+
+const subject: Subject = new Subject();
+const xiaoQin = new ConcreteObserver("小秦");
+const xiaoWang = new ConcreteObserver("小王");
+subject.addObserver(xiaoQin);
+subject.addObserver(xiaoWang);
+subject.notifyObservers();
+
+subject.deleteObserver(xiaoQin);
+subject.notifyObservers();
+
+
+/** 
+ * 发布订阅模式
+ * 
+ * 在软件架构中，发布/订阅是一种消息范式，消息的发送者（称为发布者）不会将消息直接发送给特定的接收者（称为订阅者）。
+ * 而是将发布的消息分为不同的类别，然后分别发送给不同的订阅者。 
+ * 同样的，订阅者可以表达对一个或多个类别的兴趣，只接收感兴趣的消息，无需了解哪些发布者存在。
+ * 
+ * 发布订阅模式中有三个主要角色：Publisher（发布者）、 Channels（通道）和 Subscriber（订阅者）
+ */
+type EventHandler = (...args: any[]) => any;
+
+class EventEmitter {
+  private c = new Map<string, EventHandler[]>();
+
+  // 订阅指定的主题
+  subscribe(topic: string, ...handlers: EventHandler[]) {
+    let topics = this.c.get(topic);
+    if (!topics) {
+      this.c.set(topic, topics = []);
+    }
+    topics.push(...handlers);
+  }
+
+  // 取消订阅指定的主题
+  unsubscribe(topic: string, handler?: EventHandler): boolean {
+    if (!handler) {
+      return this.c.delete(topic);
+    }
+
+    const topics = this.c.get(topic);
+    if (!topics) {
+      return false;
+    }
+    
+    const index = topics.indexOf(handler);
+
+    if (index < 0) {
+      return false;
+    }
+    topics.splice(index, 1);
+    if (topics.length === 0) {
+      this.c.delete(topic);
+    }
+    return true;
+  }
+
+  // 为指定的主题发布消息
+  publish(topic: string, ...args: any[]): any[] | null {
+    const topics = this.c.get(topic);
+    if (!topics) {
+      return null;
+    }
+    return topics.map(handler => {
+      try {
+        return handler(...args);
+      } catch (e) {
+        console.error(e);
+        return null;
+      }
+    });
+  }
+}
+
+const eventEmitter = new EventEmitter();
+eventEmitter.subscribe("ts", (msg) => console.log(`收到订阅的消息：${msg}`) );
+
+eventEmitter.publish("ts", "TypeScript发布订阅模式");
+eventEmitter.unsubscribe("ts");
+eventEmitter.publish("ts", "TypeScript发布订阅模式");
+
 
 
