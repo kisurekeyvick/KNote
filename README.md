@@ -43,6 +43,12 @@
 ├── web-optimize
 │   ├── web-optimize.ts     web优化：(1)资源的压缩合并 (2)异步加载 (3)浏览器缓存策略 (4)使用CDN
 │
+├── web-optimize
+│   ├── index.ts            web的优化
+│
+├── service-worker          
+│
+│
 ```
 
 # node
@@ -55,6 +61,13 @@
 ```
 ├── webpack-optimize
 │   ├── index.ts        webpack的一些优化方案 
+│
+├── webpack-core-knowledge
+│   ├── index.ts        webpack核心知识点
+│
+├── tree-shaking
+│   ├── index.ts        tree-shaking的理解
+│ 
 │
 ```
 
