@@ -22,8 +22,6 @@
  *      tree shaking只能在静态modules下工作。ECMAScript 6 模块加载是静态的,因此整个依赖树可以被静态地推导出解析语法树。
  *      所以在ES6中使用tree shaking是非常容易的。
  *      而且，tree shaking不仅支持import/export级别，而且也支持statement(声明)级别。
- * 
- * 
  */
 
 /**
