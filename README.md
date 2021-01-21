@@ -22,6 +22,9 @@
 │   ├── index.ts            关于import的问题
 │   ├── webpack-import.ts   webpack打包后的代码分析
 │
+│── es2020-es2021
+│   ├── index.ts            关于es2020和es2021一些有用的语法
+│
 ```
 
 # typescript
