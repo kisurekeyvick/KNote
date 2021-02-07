@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      display: grid;
+      /* grid-template-columns: 100px 100px 100px;
+      grid-template-rows: 100px 100px 100px; */
+      grid-template-columns: repeat(3, 100px);
+      grid-template-rows: repeat(3, 100px);
+
+      /* grid-row-gap: 20px;
+      grid-column-gap: 20px; */
+      gap: 20px 20px;
+    }
+
+    .project {
+      border: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="project one"><p>1</p></div>
+    <div class="project two"><p>2</p></div>
+    <div class="project three"><p>3</p></div>
+    <div class="project four"><p>4</p></div>
+    <div class="project five"><p>5</p></div>
+    <div class="project six"><p>6</p></div>
+    <div class="project seven"><p>7</p></div>
+    <div class="project eight"><p>8</p></div>
+    <div class="project nine"><p>9</p></div>
+  </div>
+</body>
+</html>
+
+grid布局
+(1) grid布局只会影响 如上：container盒子与project盒子
+
+(2) 父级属性 display: grid/line-grid  设置内容为grid布局或者内联grid布局
+
+(3) grid-template-columns 设置子属性的列
+    grid-template-rows    设置子属性的行
+
+(4) grid-template-columns/row: repeat(数量, 对应的每个行列元素的值 可以存在多个)
+
+(5) grid-template-columns/row: repeat(auto-fill, 值)
+    对行列，的自动填充，即：例如一共有10个盒子，如果一行最多能放满8个100px宽度的div盒子，那么剩余两个放在第二行
+
+(6) fr关键字，grid-template-columns: 1fr 2fr; 代表的是后一列的宽度是前一列宽度的2倍
+    同时fr可以与绝对长度的单位结合使用
+    .container {
+      display: grid;
+      grid-template-columns: 150px 1fr 2fr;
+    }
+
+(7) minmax(min, max) 取一个范围内的值,表示长度就在这个范围之中
+    grid-template-columns: 1fr 1fr minmax(100px, 1fr)
+
+(8) auto关键字 auto关键字表示由浏览器自己决定长度
+    grid-template-columns: 100px auto 100px
+
+(9) grid-row-gap用于设置行间距，grid-column-gap用于设置列间距
+    grid-gap属性是grid-column-gap和grid-row-gap的合并简写形式，语法如下：grid-gap: <grid-row-gap> <grid-column-gap>;
+    .container {
+      grid-gap: 20px 20px;
+    }
+
+    如果grid-gap省略了第二个值，浏览器认为第二个值等于第一个值
+
+    根据最新标准：grid-column-gap和grid-row-gap写成column-gap和row-gap
+                 grid-gap写成gap
+                 
+(10) 
+

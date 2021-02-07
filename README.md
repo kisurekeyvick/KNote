@@ -25,6 +25,9 @@
 │── es2020-es2021
 │   ├── index.ts            关于es2020和es2021一些有用的语法
 │
+│── examination
+│   ├── index.ts            一些你需要知道的知识：dns-prefetch、get/post请求传参长度、SEO、Reflect 对象创建目的、什么是堆？什么是栈？等等
+│
 ```
 
 # typescript
