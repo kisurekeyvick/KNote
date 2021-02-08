@@ -25,6 +25,11 @@
     .project {
       border: 1px solid #ddd;
     }
+
+    .one {
+      grid-column-start: 2;
+      grid-column-end: 4;
+    }
   </style>
 </head>
 <body>
@@ -79,5 +84,54 @@ grid布局
     根据最新标准：grid-column-gap和grid-row-gap写成column-gap和row-gap
                  grid-gap写成gap
                  
-(10) 
+(10) justify-items 属性、align-items 属性、place-items 属性
+    .container {
+      justify-items: start | end | center | stretch;
+      align-items: start | end | center | stretch;
+    }
+
+    justify-items属性设置单元格内容的水平位置（左中右），align-items属性设置单元格内容的垂直位置（上中下）。
+
+    start：对齐单元格的起始边缘
+    end：对齐单元格的结束边缘
+    center：单元格内部居中
+    stretch：拉伸，占满单元格的整个宽度（默认值）
+
+(11) justify-content 属性、align-content 属性、place-content 属性
+    .container {
+      justify-content: start | end | center | stretch | space-around | space-between | space-evenly;
+      align-content: start | end | center | stretch | space-around | space-between | space-evenly;  
+    }
+
+    justify-content属性是整个内容区域在容器里面的水平位置（左中右），align-content属性是整个内容区域的垂直位置（上中下）
+
+(12) grid-column-start、grid-column-end
+    .one {
+      // 左边框是第二根垂直网格线
+      grid-column-start: 2;
+      // 右边框是第四根垂直网格线
+      grid-column-end: 4;
+      // 上边框是第二根垂直网格线
+      grid-row-start: 2;
+      // 下边框是第四根垂直网格线
+      grid-row-end: 4;
+    }
+
+(13) grid-column 属性、grid-row 属性
+    grid-column属性是grid-column-start和grid-column-end的合并简写形式
+    grid-row属性是grid-row-start属性和grid-row-end的合并简写形式
+
+    .one {
+      grid-column: 1 / 3;
+      grid-row: 1 / 2;
+    }
+
+    // 等同于
+
+    .one {
+      grid-column-start: 1;
+      grid-column-end: 3;
+      grid-row-start: 1;
+      grid-row-end: 2;
+    }
 
