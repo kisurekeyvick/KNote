@@ -84,5 +84,160 @@ module.exports = {
   ]
 }
 
+/**
+ * DllPlugin 插件有三个配置项参数如下:
+ * (1) context(可选)： manifest文件中请求的上下文，默认为该webpack文件上下文。
+ * (2) name: 公开的dll函数的名称，和 output.library保持一致。
+ * (3) path: manifest.json 生成文件的位置和文件名称。
+ */
+// webpack.config.js的配置
+const DllReferencePlugin = require('webpack/lib/DllReferencePlugin');
+
+module.exports = {
+  plugins: [
+    // 告诉webpack使用了哪些第三方库代码
+    new DllReferencePlugin({
+      // jquery 映射到json文件上去
+      manifest: require('./dist/jquery.manifest.json')
+    }),
+    new DllReferencePlugin({
+      // echarts 映射到json文件上去
+      manifest: require('./dist/echarts.manifest.json')
+    })
+  ]
+}
+
+/**
+ * DllReferencePlugin项的参数有如下:
+ * (1) manifest: 编译时的一个用于加载的JSON的manifest的绝对路径。
+ * (2) context: 请求到模块id的映射(默认值为 manifest.content)
+ * (3) name: dll暴露的地方的名称(默认值为manifest.name)
+ * (4) scope: dll中内容的前缀。
+ * (5) sourceType: dll是如何暴露的libraryTarget。
+ */
+// webpack.config.js的配置
+const path = require('path');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const webpack = require('webpack');
+
+// 引入打包html文件
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+// 引入 DllReferencePlugin
+const DllReferencePlugin = require('webpack/lib/DllReferencePlugin');
+
+module.exports = {
+  // 入口文件
+  entry: {
+    main: './js/main.js'
+  },
+  output: {
+    filename: '[name].js',
+    // 将输出的文件都放在dist目录下
+    path: path.resolve(__dirname, 'dist')
+  },
+  module: {
+    rules: [
+      {
+        // 使用正则去匹配
+        test: /\.styl$/,
+        use: ExtractTextPlugin.extract({
+          fallback: {
+            loader: 'style-loader'
+          },
+          use: [
+            {
+              loader: 'css-loader',
+              options: {}
+            },
+            {
+              loader: 'postcss-loader',
+              options: {
+                ident: 'postcss',
+                plugins: [
+                  require('postcss-cssnext')(),
+                  require('cssnano')(),
+                  require('postcss-pxtorem')({
+                    rootValue: 16,
+                    unitPrecision: 5,
+                    propWhiteList: []
+                  }),
+                  require('postcss-sprites')()
+                ]
+              }
+            },
+            {
+              loader: 'stylus-loader',
+              options: {}
+            }
+          ]
+        })
+      },
+      {
+        test: /\.(png|jpg)$/,
+        loader: 'url-loader',
+        options: {
+          limit: 10000,
+          name: '[name].[ext]'
+        }
+      },
+      {
+        test: /\.js$/,
+        exclude: path.resolve(__dirname, 'node_modules'), // 排除文件
+        loader: 'babel-loader'
+      }
+    ]
+  },
+  resolve: {
+    extensions: ['*', '.js', '.json']
+  },
+  devtool: 'cheap-module-eval-source-map',
+  devServer: {
+    // contentBase: path.join(__dirname, "dist"),
+    port: 8081,
+    host: '0.0.0.0',
+    headers: {
+      'X-foo': '112233'
+    },
+    // hot: true,
+    inline: true,
+    // open: true,
+    overlay: true,
+    stats: 'errors-only'
+  },
+  plugins: [
+    // new ClearWebpackPlugin(['dist']),
+    new HtmlWebpackPlugin({
+      template: './index.html' // 模版文件
+    }),
+    new ExtractTextPlugin({
+      // 从js文件中提取出来的 .css文件的名称
+      filename: `main.css`
+    }),
+    // 告诉webpack使用了哪些第三方库代码
+    new DllReferencePlugin({
+      // jquery 映射到json文件上去
+      manifest: require('./dist/jquery.manifest.json')
+    }),
+    new DllReferencePlugin({
+      // echarts 映射到json文件上去
+      manifest: require('./dist/echarts.manifest.json')
+    })
+  ]
+};
 
 
+// 最后一步就是构建代码了，先生存第三方库文件，因此我们运行如下命令：
+// webpack --config webpack.dll.config.js
+
+
+// 为了方便，我们在package.json中scripts加如下代码了：
+"scripts": {
+  "dev": "webpack-dev-server --progress --colors --devtool cheap-module-eval-source-map --hot --inline",
+  "build": "webpack --progress --colors --devtool cheap-module-source-map",
+  "build:dll": "webpack --config webpack.dll.config.js"
+}
+
+
+/**
+ * 所以我们先运行 npm run build:dll 命令，运行完成后，会在dist目录下生存 echarts.dll.js, echarts.manifest.json,jquery.dll.js, jquery.manifest.json 文件。
+ */

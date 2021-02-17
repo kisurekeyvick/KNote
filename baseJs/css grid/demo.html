@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            display: grid;
+            /* 行 */
+            grid-template-rows: 100px 100px 100px;
+            /* 列 */
+            grid-template-columns: 100px 100px 100px;
+            /* 行间距 列间距 */
+            gap: 20px 60px;
+            /* grid-template-columns: repeat(1, 20% 30% 50%);
+            grid-template-rows: repeat(1, 30% 50% 20%); */
+            /* justify-items: right; */
+            /* align-items: stretch; */
+
+            /* place-items: end end; */
+            justify-content: start;
+            /* align-content: stretch; */
+        }
+
+        .content {
+            border: 1px solid #ddd;
+        }
+
+        .one {
+            /* 左边框 第二条 */
+            grid-column-start: 2;
+            grid-column-end: 3;
+            grid-row-start: 2;
+            grid-row-end: 3;
+
+            
+        }
+
+        .one span {
+            border: 1px solid #000;
+        }
+
+        .two {
+            justify-self: end;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="content one">
+            <span>one</span>
+            <span>two</span>
+            <span>three</span>
+            <span>four</span>
+        </div>
+        <div class="content two">2</div>
+        <div class="content three">3</div>
+        <div class="content four">4</div>
+        <div class="content five">5</div>
+        <div class="content six">6</div>
+        <div class="content seven">7</div>
+        <div class="content eight">8</div>
+        <div class="content nine">9</div>
+    </div>
+</body>
+</html>
