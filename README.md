@@ -28,6 +28,9 @@
 │── examination
 │   ├── index.ts            一些你需要知道的知识：dns-prefetch、get/post请求传参长度、SEO、Reflect 对象创建目的、什么是堆？什么是栈？等等
 │
+│── https
+│   ├── index.ts            关于https的一些优化：协议优化、证书优化、会话复用；也需要了解一下TLS 1.3
+│
 ```
 
 # typescript

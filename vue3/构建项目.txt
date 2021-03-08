@@ -1,0 +1,5 @@
+(1) 使用vite构建项目
+npm init @vitejs/app <project-name>
+cd <project-name>
+npm install
+npm run dev
