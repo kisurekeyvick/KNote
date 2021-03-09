@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>处理动态内容 - 文本超长</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    p.single-line {
+      width: 200px;
+      overflow : hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    p.multiple-lines {
+      width: 200px;
+      overflow : hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+  </style>
+</head>
+<body>
+  <p class="single-line">
+    单行单行单行单行单行单行单行单行单行单行
+    单行单行单行单行单行单行单行单行单行单行
+  </p>
+  </br>
+  <p class="multiple-lines">
+    多行多行多行多行多行多行多行多行多行多行
+    多行多行多行多行多行多行多行多行多行多行
+    多行多行多行多行多行多行多行多行多行多行
+    多行多行多行多行多行多行多行多行多行多行
+    多行多行多行多行多行多行多行多行多行多行
+    多行多行多行多行多行多行多行多行多行多行
+    多行多行多行多行多行多行多行多行多行多行
+  </p>
+</body>
+</html>

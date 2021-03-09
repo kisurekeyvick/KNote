@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>考虑屏幕 dpr - 响应式图片</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+
+  </style>
+</head>
+<body>
+  <div>
+    <img 
+        src = "photo.png" 
+        sizes = "(min-width: 600px) 600px, 300px" 
+        srcset = "photo@1x.png 300w,
+                       photo@2x.png 600w,
+                       photo@3x.png 1200w,"
+    />
+    <!-- <p>
+      在移动端或者一些高清的 PC 屏幕（苹果的 MAC Book），屏幕的 dpr 可能大于 1。这种时候，
+      我们可能还需要考虑利用多倍图去适配不同 dpr 的屏幕。
+
+      img 元素的 srcset 属性用于浏览器根据宽、高和像素密度来加载相应的图片资源
+
+      属性格式：图片地址 宽度描述w 像素密度描述x，多个资源之间用逗号分隔，例如：
+      <img src="small.jpg " srcset="big.jpg 1440w, middle.jpg 800w, small.jpg 1x" />
+      上面的例子表示浏览器宽度达到 800px 则加载 middle.jpg ，达到 1400px 则加载 big.jpg。注意：像素密度描述只对固定宽度图片有效。
+
+
+      img 元素的 size 属性给浏览器提供一个预估的图片显示宽度。
+      属性格式：媒体查询 宽度描述（支持px），多条规则用逗号分隔。
+      <img src="images/gun.png" alt="img元素srcset属性浅析"
+         srcset="images/bg_star.jpg 1200w, images/share.jpg 800w, images/gun.png 320w"
+         sizes="(max-width: 320px) 300w, 1200w"/>
+      如上例子：浏览器视口为 320px 时图片宽度为 300px，其他情况为 1200px
+      
+    </p> -->
+  </div>
+</body>
+</html>

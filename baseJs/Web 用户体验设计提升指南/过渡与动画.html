@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>过渡与动画</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    .scrolling-box {
+      scroll-behavior: smooth
+    }
+  </style>
+</head>
+<body>
+  <div class="g-container">
+    <nav>
+      <a href="#1">1</a>
+      <a href="#2">2</a>
+      <a href="#3">3</a>
+    </nav>
+    <div class="scrolling-box">
+      <section id="1">First section</section>
+      <section id="2">Second section</section>
+      <section id="3">Third section</section>
+    </div>
+  </div>
+
+  <p>
+    (1) 使用 scroll-behavior: smooth 让滚动丝滑
+
+    (2) 使用 scroll-snap-type 优化滚动效果
+        这个属性规定了一个容器是否对内部滚动动作进行捕捉，并且规定了如何去处理滚动结束状态。让滚动操作结束后，元素停止在适合的位置。
+  </p>
+</body>
+</html>
