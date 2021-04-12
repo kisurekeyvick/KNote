@@ -37,3 +37,25 @@
  * 
  * 该方法清空dataTransfer对象中存储的数据，参数可选，为数据类型。若为空，则清空所有数据。
  */
+
+/**
+ * 案例：在项目拖动的开始事件(ondragstart)的时候，可以对dataTransfer进行设值操作(setData)
+ */
+document.getElementById('source').ondragstart = function (event) {
+  event.dataTransfer.setData('some-key', 'some-value');
+};
+
+/**
+ * 案例：在项目拖动结束的时候，可以获取dataTransfer对象里的值。
+ */
+document.getElementById('source').ondragend = function(event) {
+  event.preventDefault(); // 拖动的默认处理方式是在新窗口打开，所以阻止其执行
+  event.dataTransfer.getData('some-key');
+}
+
+/**
+ * 在其它的事件(如ondragover、ondragleave等），是无法获取dataTransfer里面的值了。
+ * 这是由于W3C要求对dataTransfer里的值进行保护[参考]。
+ * 因此，如果需要在这些事件里获取数据，只能通过一个全局变量等其它方式来实现了。
+ */
+
