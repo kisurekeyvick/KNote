@@ -6,6 +6,9 @@
 
 # baseJs
 ```
+├── 如何排查内存泄漏导致的页面卡顿现象
+│   ├── index.ts          
+│
 ├── CORS
 │   ├── index.ts          CORS 详解
 │

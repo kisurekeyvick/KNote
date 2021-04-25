@@ -97,3 +97,67 @@ asyncPool(2, [1000, 5000, 3000, 2000], timeout);
 
   return enqueue().then(() => Promise.all(ret));
 }
+/**
+ * 在 ES6 的实现版本中，通过内部封装的 enqueue 函数来实现核心的控制逻辑。
+ * 当 Promise.race(executing) 返回的 Promise 对象变成已完成状态时，才会调用 enqueue 函数，从 array 数组中获取新的待办任务。
+ */
+
+
+/**
+ * 手写 Promise.all
+ * 
+ * Promise.all(iterable) 方法会返回一个 promise 对象，当输入的所有 promise 对象的状态都变成 resolved 时，
+ * 返回的 promise 对象就会以数组的形式，返回每个 promise 对象 resolve 后的结果。
+ * 当输入的任何一个 promise 对象状态变成 rejected 时，则返回的 promise 对象会 reject 对应的错误信息。
+ */
+Promise.all = function (iterators) {
+  return new Promise((resolve, reject) => {
+    if (!iterators || iterators.length === 0) {
+      resolve([]);
+    } else {
+      let count = 0; // 计数器，用于判断所有任务是否执行完成
+      let result = []; // 结果数组
+      for (let i = 0; i < iterators.length; i++) {
+        // 考虑到iterators[i]可能是普通对象，则统一包装为Promise对象
+        Promise.resolve(iterators[i]).then(
+          (data) => {
+            result[i] = data; // 按顺序保存对应的结果
+            // 当所有任务都执行完成后，再统一返回结果
+            if (++count === iterators.length) {
+              resolve(result);
+            }
+          },
+          (err) => {
+            reject(err); // 任何一个Promise对象执行失败，则调用reject()方法
+            return;
+          }
+        );
+      }
+    }
+  });
+};
+/**
+ * 需要注意的是对于 Promise.all 的标准实现来说，它的参数是一个可迭代对象，比如 Array、String 或 Set 等
+ */
+
+
+/**
+ * 手写 Promise.race
+ * 
+ * Promise.race(iterable) 方法会返回一个 promise 对象，一旦迭代器中的某个 promise 对象 resolved 或 rejected，
+ * 返回的 promise 对象就会 resolve 或 reject 相应的值。
+ */
+ Promise.race = function (iterators) {
+  return new Promise((resolve, reject) => {
+    for (const iter of iterators) {
+      Promise.resolve(iter)
+        .then((res) => {
+          resolve(res);
+        })
+        .catch((e) => {
+          reject(e);
+        });
+    }
+  });
+};
+
