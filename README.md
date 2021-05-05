@@ -6,6 +6,12 @@
 
 # baseJs
 ```
+├── CORS
+│   ├── index.ts          CORS 详解
+│
+├── base64原理
+│   ├── index.ts          base64原理
+│
 ├── 图片懒加载及底层实现原理
 │   ├── index.ts          4种实现图片懒加载的方式
 │

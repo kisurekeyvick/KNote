@@ -415,5 +415,141 @@ module.exports = {
  */
 
 
+/**
+ * 缩小构建目标/减少文件搜索范围
+ * 
+ * 有时候我们的项目中会用到很多模块，但有些模块其实是不需要被解析的。这时我们就可以通过缩小构建目标或者减少文件搜索范围的方式来对构建做适当的优化。
+ * 
+ * (1) 缩小构建目标(主要是exclude 与 include的使用)
+ *      - exclude: 不需要被解析的模块
+ *      - include: 需要被解析的模块
+        // webpack.config.js
+        const path = require('path');
+        module.exports = {
+          ...
+          module: {
+            rules: [
+              {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                // include: path.resolve('src'),
+                use: ['babel-loader']
+              }
+            ]
+          }
 
+        这里babel-loader就会排除对node_modules下对应 js 的解析，提升构建速度
+ * 
+ * (2) 减少文件搜索范围
+ *      这个主要是resolve相关的配置，用来设置模块如何被解析。通过resolve的配置，可以帮助Webpack快速查找依赖，也可以替换对应的依赖。
+ * 
+ *      resolve.modules：告诉 webpack 解析模块时应该搜索的目录
+ *      resolve.mainFields：当从 npm 包中导入模块时（例如，import * as React from 'react'），此选项将决定在 package.json 中使用哪个字段导入模块。
+ *                          根据 webpack 配置中指定的 target 不同，默认值也会有所不同
+ *      resolve.mainFiles：解析目录时要使用的文件名，默认是index
+ *      resolve.extensions：文件扩展名
+ * 
+        // webpack.config.js
+        const path = require('path');
+        module.exports = {
+          ...
+          resolve: {
+            alias: {
+              react: path.resolve(__dirname, './node_modules/react/umd/react.production.min.js')
+            }, //直接指定react搜索模块，不设置默认会一层层的搜寻
+            modules: [path.resolve(__dirname, 'node_modules')], //限定模块路径
+            extensions: ['.js'], //限定文件扩展名
+            mainFields: ['main'] //限定模块入口文件名
+ * 
+ * (3) 动态 Polyfill 服务
+ *      - 什么是 babel-polyfill?
+ *      babel只负责语法转换，比如将ES6的语法转换成ES5。但如果有些对象、方法，浏览器本身不支持，比如：
+ *          全局对象：Promise、WeakMap 等。
+ *          全局静态函数：Array.from、Object.assign 等。
+ *          实例方法：比如 Array.prototype.includes 等。
+ *      此时，需要引入babel-polyfill来模拟实现这些对象、方法。
+ *      这种一般也称为垫片。
+ * 
+ *      - 怎么使用babel-polyfill?
+ *      使用也非常简单，在webpack.config.js文件作如下配置就可以了：
+        module.exports = {
+          entry: ["@babel/polyfill", "./app/js"],
+        };
+ * 
+ *      - 为什么还要用动态Polyfill?
+ *      babel-polyfill由于是一次性全部导入整个polyfill，所以用起来很方便，但与此同时也带来了一个大问题：文件很大，所以后续的方案都是针对这个问题做的优化。
+ *      打包后babel-polyfill的占比 29.6%，有点太大了，所以动态Polyfill服务诞生了。
+ * 
+ *      每次打开页面，浏览器都会向Polyfill Service发送请求，Polyfill Service识别 User Agent，下发不同的 Polyfill，做到按需加载Polyfill的效果。
+ * 
+ *      - 怎么使用动态Polyfill服务?
+ *      访问url，根据User Agent 直接返回浏览器所需的 polyfills
+ *      采用官方提供的服务地址即可：https://polyfill.io/v3/polyfill.min.js
+ */  
 
+/**
+ * Scope Hoisting
+ * 
+ * (1) 什么是Scope Hoisting?
+ * Scope hoisting 直译过来就是「作用域提升」,JavaScript 会把函数和变量声明提升到当前作用域的顶部。
+ * 「作用域提升」也类似于此，webpack 会把引入的 js 文件“提升到”它的引入者顶部。
+ * 
+ * Scope Hoisting 可以让 Webpack 打包出来的代码文件更小、运行的更快。
+ * 
+ * 
+ * (2) 启用Scope Hoisting?
+ * 要在 Webpack 中使用 Scope Hoisting 非常简单，因为这是 Webpack 内置的功能，只需要配置一个插件，相关代码如下：
+      // webpack.config.js
+      const webpack = require('webpack')
+
+      module.exports = mode => {
+        if (mode === 'production') {
+          return {}
+        }
+
+        return {
+          devtool: 'source-map',
+          plugins: [new webpack.optimize.ModuleConcatenationPlugin()],
+        }
+      }
+ * 
+ * 
+ * (3) 启用Scope Hoisting后的对比?
+ * 让我们先来看看在没有 Scope Hoisting 之前 Webpack 的打包方式。
+ * 
+ * 假如现在有两个文件分别是：
+ * constant.js
+ * export default 'Hello,Jack-cool';
+ * 
+ * 入口文件 main.js
+      import str from './constant.js';
+      console.log(str);
+ * 
+ * 以上源码用 Webpack 打包后的部分代码如下：
+      [
+        (function (module, __webpack_exports__, __webpack_require__) {
+          var __WEBPACK_IMPORTED_MODULE_0__constant_js__ = __webpack_require__(1);
+          console.log(__WEBPACK_IMPORTED_MODULE_0__constant_js__["a"]);
+        }),
+        (function (module, __webpack_exports__, __webpack_require__) {
+          __webpack_exports__["a"] = ('Hello,Jack-cool');
+        })
+      ]
+ * 
+ * 在开启 Scope Hoisting 后，同样的源码输出的部分代码如下：
+      [
+        (function (module, __webpack_exports__, __webpack_require__) {
+          var constant = ('Hello,Jack-cool');
+          console.log(constant);
+        })
+      ]
+ * 
+ * 从中可以看出开启 Scope Hoisting 后，函数申明由两个变成了一个，constant.js 中定义的内容被直接注入到了 main.js 对应的模块中。 这样做的好处是：
+ *  - 代码体积更小，因为函数申明语句会产生大量代码；
+ *  - 代码在运行时因为创建的函数作用域更少了，内存开销也随之变小。
+ * 
+ * Scope Hoisting 的实现原理其实很简单：分析出模块之间的依赖关系，尽可能的把打散的模块合并到一个函数中去，
+ * 但前提是不能造成代码冗余。 因此只有那些被引用了一次的模块才能被合并。
+ * 
+ * 注意：由于 Scope Hoisting 需要分析出模块之间的依赖关系，因此源码必须采用 ES6 模块化语句，不然它将无法生效
+ */
