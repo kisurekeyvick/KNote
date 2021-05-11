@@ -123,8 +123,66 @@
           root.removeChild(child)
       })
  * 
+ *    改动很简单，就是将对.child节点的引用移动到了click事件的回调函数中，那么当移除节点并退出回调函数的执行上文后就会自动清除对该节点的引用，
+ *    那么自然就不会存在内存泄漏的情况了
  * 
  * 
+ * 
+ * 5-4 控制台的打印
+ *    控制台的打印也会造成内存泄漏吗？
+ *    是的，如果浏览器不一直保存着我们打印对象的信息，我们为何能在每次打开控制的Console时看到具体的数据呢？
+ * 
+ *    来一段测试代码：
+      document.querySelector('button').addEventListener('click', function() {
+        let obj = new Array(1000000)
+        console.log(obj);
+      })
+ * 
+ *    先触发一次垃圾回收清除初始的内存，然后点击三次按钮，即执行了三次点击事件，最后再触发一次垃圾回收。
+ *    查看录制结果发现JS Heap曲线成阶梯上升，并且最终保持的高度比初始基准线高很多，
+ *    这说明每次执行点击事件创建的很大的数组对象obj都因为console.log被浏览器保存了下来并且无法被回收
+ * 
+ * 
+ * 
+ * 5-5 遗忘的定时器
+ *    定义了定时器后就再也不去考虑清除定时器了，这样其实也会造成一定的内存泄漏
+ * 
+      function fn1() {
+        let largeObj = new Array(100000)
+
+        setInterval(() => {
+            let myObj = largeObj
+        }, 1000)
+      }
+
+      document.querySelector('button').addEventListener('click', function() {
+        fn1()
+      })
+ * 
+ *    这段代码是在点击按钮后执行fn1函数，fn1函数内创建了一个很大的数组对象largeObj，
+ *    同时创建了一个setInterval定时器，定时器的回调函数只是简单的引用了一下变量largeObj
+ * 
+ *    如图：【定时器造成的内存泄漏.gif】
+ * 
+ *    原因其实就是因为setInterval的回调函数内对变量largeObj有一个引用关系，而定时器一直未被清除，所以变量largeObj的内存也自然不会被释放
+ *    【定时器一直未被清除】
+ *    
+ * 
+ *    所以对应的代码改善(假设我们只需要让定时器执行三次就可以了)：
+      function fn1() {
+        let largeObj = new Array(100000)
+        let index = 0
+
+        let timer = setInterval(() => {
+            if(index === 3) clearInterval(timer);
+            let myObj = largeObj
+            index ++
+        }, 1000)
+      }
+
+      document.querySelector('button').addEventListener('click', function() {
+        fn1()
+      })
  * 
  */
 
